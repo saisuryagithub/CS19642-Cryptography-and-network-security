@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include<Math.h>
+#define P 11 
+#define Q 5 
+#define H 2
+#define G (int)pow(H,((P-1)/Q))%P 
+int power(int a, int b, int n) {
+ long long res = 1;
+ a %= n;
+ while (b > 0) {
+ if (b & 1)
+ res = (res * a) % n;
+ b >>= 1;
+ a = (a * a) % n;
+ }
+ return (int)res;
+}
+int generatePrivateKey() {
+ return 1; 
+}
+int generatePublicKey(int x) {
+ return (int)(pow(G,x))%P; 
+}
+void generateKeys(int *privateKey, int *publicKey) {
+ *privateKey = generatePrivateKey();
+ *publicKey = generatePublicKey(*privateKey);
+}
+void signMessage(int privateKey, int publicKey, int *r, int *s, int message) {
+ int k = 1; 
+ *r = power(G, k, P) % Q; 
+ int kInv = 1; 
+ int hash = message % Q; 
+ *s = (kInv * (hash + privateKey * (*r))) % Q; 
+}
+int verifySignature(int publicKey, int r, int s, int message) {
+ if (r <= 0 || r >= Q || s <= 0 || s >= Q)
+ return 0; 
+ int w = power(s, -1, Q); 
+ int hash = message % Q; 
+ int u1 = (hash * w) % Q; 
+ int u2 = (r * w) % Q; 
+21
+ int v1 = power(G, u1, P); 
+ int v2 = power(publicKey, u2, P); 
+ int v = ((v1 * v2) % P) % Q; 
+ return v == r; 
+}
+int main() {
+ int privateKey, publicKey, r, s, message;
+ generateKeys(&privateKey, &publicKey);
+ printf("Private Key: %d\n", privateKey);
+ printf("Public Key: %d\n", publicKey);
+ printf("Enter the message to sign: ");
+ scanf("%d", &message);
+ signMessage(privateKey, publicKey, &r, &s, message);
+ printf("Signature (r, s): (%d, %d)\n", r, s);
+ if (verifySignature(publicKey, r, s, message))
+ printf("Signature is valid.\n");
+ else
+ printf("Signature is invalid.\n");
+ return 0;
+}

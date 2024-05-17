@@ -1,0 +1,38 @@
+#include<stdio.h>
+#include<math.h>
+int power(int a, int b, int P) {
+ if (b == 1)
+ return a;
+ else
+ return (((int)pow(a, b)) % P);
+}
+int generateKey(int a, int x, int P) {
+ return power(a, x, P);
+}
+int main() {
+ int P, G, a, b, x, y, ka, kb;
+ printf("Enter the value of P (a prime number): ");
+ scanf("%d", &P);
+ printf("Enter the value of G (a primitive root of P): ");
+ scanf("%d", &G);
+ printf("Enter Alice's private key (a less than P): ");
+ scanf("%d", &a);
+ printf("Enter Bob's private key (b less than P): ");
+ scanf("%d", &b);
+ x = power(G, a, P);
+ y = power(G, b, P);
+ ka = generateKey(y, a, P);
+ kb = generateKey(x, b, P);
+ printf("\nPublicly shared values:\n");
+ printf("P (prime number): %d\n", P);
+ printf("G (primitive root of P): %d\n", G);
+ printf("\nAlice's private key (a): %d\n", a);
+ printf("Bob's private key (b): %d\n", b);
+ printf("\nComputed Public keys:\n");
+ printf("Alice's public key (x): %d\n", x);
+ printf("Bob's public key (y): %d\n", y);
+ printf("\nSecret Key:\n");
+ printf("Shared secret key by Alice (ka): %d\n", ka);
+ printf("Shared secret key by Bob (kb): %d\n", kb);
+ return 0;
+}

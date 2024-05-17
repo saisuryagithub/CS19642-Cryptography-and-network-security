@@ -1,0 +1,57 @@
+#include<stdio.h>
+#include<string.h>
+int power(int a, int b, int c) {
+ int res = 1;
+ a = a % c;
+ while (b > 0) {
+ if (b & 1)
+ res = (res * a) % c;
+ b = b >> 1;
+ a = (a * a) % c;
+ }
+ return res;
+}
+void generate_key(int *e, int *d, int *n) {
+ int p = 17; 
+ int q = 19; 
+ *n = p * q;
+ int phi = (p - 1) * (q - 1);
+ *e = 7; 
+ *d = 1;
+ while (((*d) * (*e)) % phi != 1)
+ (*d)++;
+}
+void encrypt(char *message, int e, int n, int *encrypted_message) {
+ int len = strlen(message);
+ for (int i = 0; i < len; i++)
+ encrypted_message[i] = power(message[i], e, n);
+}
+void decrypt(int *encrypted_message, int d, int n, char *decrypted_message, int len) {
+ for (int i = 0; i < len; i++)
+ decrypted_message[i] = power(encrypted_message[i], d, n);
+}
+int main() {
+ int e = 7; 
+ int d, n;
+ int encrypted_message[100];
+ char message[100], decrypted_message[100];
+ int p = 17;
+15
+ int q = 19;
+ n = p * q; 
+ generate_key(&e, &d, &n);
+ printf("Public Key (e, n): (%d, %d)\n", e, n);
+ printf("Private Key (d, n): (%d, %d)\n", d, n);
+ printf("Enter a message: ");
+ fgets(message, sizeof(message), stdin);
+ encrypt(message, e, n, encrypted_message);
+ printf("Encrypted message: ");
+ for (int i = 0; i < strlen(message); i++)
+ printf("%d ", encrypted_message[i]);
+ printf("\nDecrypted message: ");
+ decrypt(encrypted_message, d, n, decrypted_message, strlen(message));
+ // printf("%s\n", decrypted_message);
+ for(int i=0;i<strlen(message);i++)
+ printf("%c", decrypted_message[i]);
+ return 0;
+}
